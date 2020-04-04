@@ -74,7 +74,7 @@ function getClientConfig() {
           ]
         : []),
       new HtmlWebpackPlugin({ template: 'src/gui/index.html' }),
-      new FaviconsWebpackPlugin('./src/gui/favicon.svg'),
+      new FaviconsWebpackPlugin('./src/gui/cards.svg'),
       ...(process.env.ANALYZE_CLIENT_BUNDLE ? [new BundleAnalyzerPlugin()] : []),
     ],
   }
