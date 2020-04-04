@@ -1,0 +1,16 @@
+// NOTE: this config is only used for jest. See webpack.config.ts for app babel config
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": { "node": "12.13" },
+        "useBuiltIns": "usage",
+        "corejs": 3
+      }
+    ],
+    "@babel/preset-react",
+    "@babel/preset-typescript",
+    "@emotion/babel-preset-css-prop"
+  ]
+}
