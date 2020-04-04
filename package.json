@@ -31,6 +31,7 @@
     "@types/koa-cache-control": "^2.0.1",
     "axios": "^0.19.2",
     "core-js": "^3.6.4",
+    "emotion-reset": "^2.0.7",
     "koa": "^2.11.0",
     "koa-cache-control": "^2.0.0",
     "koa-joi-router": "^6.0.2",
