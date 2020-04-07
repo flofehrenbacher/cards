@@ -3,10 +3,27 @@ import ReactDOM from 'react-dom'
 import { css, Global } from '@emotion/core'
 import emotionReset from 'emotion-reset'
 import { JoinForm } from './components/join-form'
-import { PlayersList, Player } from './components/players-list'
+import { UsersList } from './components/users-list'
+import { GiveCards } from './components/give-cards'
+import { CardsOnHand } from './components/cards-on-hand'
+import { User } from '..'
 
 export function App() {
-  const [players, setPlayers] = React.useState<Player[]>([])
+  const [users, setPlayers] = React.useState<User[]>(() => [])
+  const [me, setMe] = React.useState<User | undefined>(undefined)
+
+  React.useEffect(() => {
+    socket.on('update users', (data: User[]) => {
+      setPlayers(data)
+    })
+
+    socket.on('assign id', (data: User) => {
+      setMe({
+        name: data.name,
+        id: data.id,
+      })
+    })
+  }, [])
 
   return (
     <>
@@ -19,9 +36,11 @@ export function App() {
         `}
       />
       <div css={pageStyles}>
-        <PlayersList players={players} css={{ width: '90%', padding: 8, marginBottom: 16 }} />
+        <UsersList users={users} css={{ width: '90%', padding: 8, marginBottom: 16 }} />
         <h1 css={[headlineStyles, { marginBottom: 16 }]}>Cards</h1>
-        <JoinForm setPlayers={setPlayers} />
+        {me ? <h2>{me.name}</h2> : <JoinForm users={users} />}
+        <GiveCards />
+        <CardsOnHand />
       </div>
     </>
   )
