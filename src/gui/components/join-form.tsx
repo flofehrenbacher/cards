@@ -20,6 +20,7 @@ export function JoinForm({
       onSubmit={(event) => {
         event.preventDefault()
         setPlayers((players) => [...players, { name }])
+        socket.emit('add user', { name })
         setName('')
       }}
     >
