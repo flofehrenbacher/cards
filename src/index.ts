@@ -1,6 +1,7 @@
 import express from 'express'
 import socketio, { Socket } from 'socket.io'
 import path from 'path'
+import shuffle from 'shuffle-array'
 
 const PORT = process.env.PORT || 3000
 
@@ -20,10 +21,9 @@ export type User = {
 }
 
 let USERS: User[] = []
-// let CARDS = Array.from({ length: 12 }).map((_, i) => i + 1)
+let CARDS = Array.from({ length: 32 }).map((_, i) => i + 1)
 
 io.on('connection', function (socket: Socket) {
-  console.log(socket.id)
   io.to(`${socket.id}`).emit('update users', USERS)
 
   socket.on('add user', (data: User) => {
@@ -42,16 +42,23 @@ io.on('connection', function (socket: Socket) {
   })
 
   socket.on('reset users', () => {
-    console.log('reset users')
     USERS = []
     io.emit('update users', USERS)
   })
 
-  // socket.on('give cards', () => {
-  //   console.log('test')
-  //   USERS.map((u) => console.log(u.id))
-  //   // io.emit('')
-  // })
+  socket.on('give cards', () => {
+    const mixedCards = shuffle(CARDS)
+    USERS.forEach((u, userIndex) => {
+      io.to(`${u.id}`).emit(
+        'assign cards',
+        mixedCards.filter((_, cardIndex) => cardIndex % USERS.length === userIndex),
+      )
+    })
+  })
+
+  socket.on('play card', ({ card }) => {
+    io.emit('update stack', card)
+  })
 })
 
 server.listen(3000, function () {
