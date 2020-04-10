@@ -9,11 +9,16 @@ const app = express()
 app.set('port', PORT)
 
 let server = require('http').Server(app)
-let io = socketio(server)
+let io = socketio(server, { serveClient: false })
 
-const guiPath = process.env.NODE_ENV === 'production' ? './gui' : '../build/gui'
+const guiPath =
+  process.env.NODE_ENV === 'production' ? './gui' : path.join(__dirname, '../build/gui')
 
-app.use(express.static(path.join(__dirname, guiPath)))
+const assetsPath =
+  process.env.NODE_ENV === 'production' ? './assets' : path.join(__dirname, '../assets')
+
+app.use(express.static(guiPath))
+app.use('/assets', express.static(assetsPath))
 
 export type User = {
   name: string

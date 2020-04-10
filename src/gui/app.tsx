@@ -36,9 +36,9 @@ export function App() {
         `}
       />
       <div css={pageStyles}>
-        <UsersList users={users} css={{ width: '90%', padding: 8, marginBottom: 16 }} />
-        <h1 css={[headlineStyles, { marginBottom: 16 }]}>Cards</h1>
+        <h1 css={[headlineStyles, { marginBottom: 16, justifySelf: 'flex-start' }]}>Kattln</h1>
         {me ? <h2>{me.name}</h2> : <JoinForm users={users} />}
+        <UsersList me={me} users={users} css={{ width: '90%', padding: 8, marginBottom: 16 }} />
         <GiveCards />
         <CardsOnHand />
       </div>
@@ -49,7 +49,6 @@ export function App() {
 const pageStyles = css`
   display: flex;
   align-items: center;
-  justify-content: center;
   width: 100vw;
   height: 100vh;
   background: #000;
@@ -58,8 +57,13 @@ const pageStyles = css`
 `
 
 const headlineStyles = css`
+  text-align: center;
   font-size: 50px;
   letter-spacing: 10px;
+  width: 100%;
+  padding: 12px;
+  background: white;
+  color: black;
 `
 
 const main = document.createElement('main')
