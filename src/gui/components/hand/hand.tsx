@@ -1,7 +1,9 @@
 import React from 'react'
 import { css } from '@emotion/core'
+import { Card } from '../card/card'
+import { SchelleIcon } from '../card/deck/bavarian/schelle'
 
-export function CardsOnHand() {
+export function Hand() {
   const [cards, setCards] = React.useState([])
   const [stack, setStack] = React.useState<number[]>([])
 
@@ -19,24 +21,21 @@ export function CardsOnHand() {
     <>
       <ul css={stackStyles}>
         {stack.map((s, i) => (
-          <li key={s} css={cardStackStyles(i, stack.length)}>
-            {s}
-          </li>
+          <Card icon={SchelleIcon} name={String(s)} key={s} css={cardStackStyles(i)} />
         ))}
       </ul>
       <ul css={handStyles}>
         {cards.map((c, i) => (
-          <li
+          <Card
+            icon={SchelleIcon}
+            name={c}
             key={c}
             css={cardStyles(i, cards.length)}
             onClick={() => {
-              console.log('play card', c)
               setCards((prev) => prev.filter((card) => card !== c))
               socket.emit('play card', { card: c })
             }}
-          >
-            {c}
-          </li>
+          />
         ))}
       </ul>
     </>
@@ -58,7 +57,7 @@ const stackStyles = css`
   justify-content: center;
 `
 
-const cardStackStyles = (card: number, total: number) => css`
+const cardStackStyles = (card: number) => css`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -68,7 +67,7 @@ const cardStackStyles = (card: number, total: number) => css`
   width: 80px;
   height: 160px;
   position: absolute;
-  transform: rotate(${card * 4}deg);
+  transform: rotate(${card * 10}deg);
   border: 1px solid black;
   z-index: ${card};
 `

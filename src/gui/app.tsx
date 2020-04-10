@@ -1,12 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { css, Global } from '@emotion/core'
-import emotionReset from 'emotion-reset'
 import { JoinForm } from './components/join-form'
 import { UsersList } from './components/users-list'
 import { GiveCards } from './components/give-cards'
-import { CardsOnHand } from './components/cards-on-hand'
+import { Hand } from './components/hand/hand'
 import { User } from '..'
+import { GlobalStyles } from '../styles/global'
 
 export function App() {
   const [users, setPlayers] = React.useState<User[]>(() => [])
@@ -27,20 +27,13 @@ export function App() {
 
   return (
     <>
-      <Global
-        styles={css`
-          ${emotionReset};
-          * {
-            font-family: Arial, Helvetica, sans-serif;
-          }
-        `}
-      />
+      <GlobalStyles />
       <div css={pageStyles}>
         <h1 css={[headlineStyles, { marginBottom: 16, justifySelf: 'flex-start' }]}>Kattln</h1>
         {me ? <h2>{me.name}</h2> : <JoinForm users={users} />}
         <UsersList me={me} users={users} css={{ width: '90%', padding: 8, marginBottom: 16 }} />
         <GiveCards />
-        <CardsOnHand />
+        <Hand />
       </div>
     </>
   )
