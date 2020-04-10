@@ -1,23 +1,22 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { css, Global } from '@emotion/core'
-import { JoinForm } from './components/join-form'
-import { UsersList } from './components/users-list'
-import { GiveCards } from './components/give-cards'
-import { Hand } from './components/hand/hand'
-import { User } from '..'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import { GlobalStyles } from '../styles/global'
+import { Home } from './pages/home'
+import { Players } from './pages/players'
+import { Player } from '..'
 
-export function App() {
-  const [users, setPlayers] = React.useState<User[]>(() => [])
-  const [me, setMe] = React.useState<User | undefined>(undefined)
+export default function App() {
+  const [me, setMe] = React.useState<Player | null>(null)
+  const [players, setPlayers] = React.useState<Player[]>(() => [])
 
   React.useEffect(() => {
-    socket.on('update users', (data: User[]) => {
+    socket.on('update users', (data: Player[]) => {
+      console.log({ data })
       setPlayers(data)
     })
 
-    socket.on('assign id', (data: User) => {
+    socket.on('assign id', (data: Player) => {
       setMe({
         name: data.name,
         id: data.id,
@@ -28,36 +27,19 @@ export function App() {
   return (
     <>
       <GlobalStyles />
-      <div css={pageStyles}>
-        <h1 css={[headlineStyles, { marginBottom: 16, justifySelf: 'flex-start' }]}>Kattln</h1>
-        {me ? <h2>{me.name}</h2> : <JoinForm users={users} />}
-        <UsersList me={me} users={users} css={{ width: '90%', padding: 8, marginBottom: 16 }} />
-        <GiveCards />
-        <Hand />
-      </div>
+      <Router>
+        <Switch>
+          <Route exact path="/">
+            <Home players={players} />
+          </Route>
+          <Route path="/players">
+            <Players players={players} />
+          </Route>
+        </Switch>
+      </Router>
     </>
   )
 }
-
-const pageStyles = css`
-  display: flex;
-  align-items: center;
-  width: 100vw;
-  height: 100vh;
-  background: #000;
-  color: #fff;
-  flex-direction: column;
-`
-
-const headlineStyles = css`
-  text-align: center;
-  font-size: 50px;
-  letter-spacing: 10px;
-  width: 100%;
-  padding: 12px;
-  background: white;
-  color: black;
-`
 
 const main = document.createElement('main')
 document.body.append(main)

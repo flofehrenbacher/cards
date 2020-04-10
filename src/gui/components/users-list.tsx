@@ -1,7 +1,7 @@
 import React from 'react'
-import { User } from '../..'
+import { Player } from '../..'
 
-export function UsersList({ me, users, ...props }: { me: User | undefined; users: User[] }) {
+export function UsersList({ me, users, ...props }: { me: Player | undefined; users: Player[] }) {
   return (
     <ol css={{ display: 'flex', justifyContent: 'space-evenly' }} {...props}>
       {users.map((u, i) => (

@@ -20,18 +20,18 @@ const assetsPath =
 app.use(express.static(guiPath))
 app.use('/assets', express.static(assetsPath))
 
-export type User = {
+export type Player = {
   name: string
   id: string
 }
 
-let USERS: User[] = []
+let USERS: Player[] = []
 let CARDS = Array.from({ length: 32 }).map((_, i) => i + 1)
 
 io.on('connection', function (socket: Socket) {
   io.to(`${socket.id}`).emit('update users', USERS)
 
-  socket.on('add user', (data: User) => {
+  socket.on('add user', (data: Player) => {
     const newUser = {
       name: data.name,
       id: socket.id,
@@ -41,7 +41,7 @@ io.on('connection', function (socket: Socket) {
     io.to(`${socket.id}`).emit('assign id', newUser)
   })
 
-  socket.on('remove user', (data: User) => {
+  socket.on('remove user', (data: Player) => {
     USERS = USERS.filter((p) => p.name !== data.name)
     io.emit('update users', USERS)
   })
