@@ -44,6 +44,7 @@ io.on('connection', function (socket: Socket) {
       name: data.name,
       id: socket.id,
     }
+
     USERS = [...USERS, newUser]
     io.emit('update users', USERS)
     io.to(`${socket.id}`).emit('assign id', newUser)

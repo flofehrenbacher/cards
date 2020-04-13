@@ -10,6 +10,7 @@ import { Player, Card } from '../model/model'
 export default function App() {
   const [me, setMe] = React.useState<Player | undefined>(undefined)
   const [myCards, setMyCards] = React.useState<Card[]>([])
+  const [stack, setStack] = React.useState<Card[]>([])
   const [players, setPlayers] = React.useState<Player[]>(() => [])
 
   React.useEffect(() => {
@@ -42,7 +43,14 @@ export default function App() {
             <Players players={players} me={me} />
           </Route>
           <Route path="/game">
-            <Game players={players} me={me} myCards={myCards} />
+            <Game
+              players={players}
+              me={me}
+              myCards={myCards}
+              setMyCards={setMyCards}
+              stack={stack}
+              setStack={setStack}
+            />
           </Route>
         </Switch>
       </Router>
