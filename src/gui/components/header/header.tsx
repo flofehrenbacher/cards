@@ -4,7 +4,7 @@ import { colors } from '../../../styles/global'
 
 export function Header(props: any) {
   return (
-    <h1 css={[headerStyles, { marginBottom: 16, justifySelf: 'flex-start' }]} {...props}>
+    <h1 css={[headerStyles, { justifySelf: 'flex-start' }]} {...props}>
       Kattln
     </h1>
   )
@@ -20,4 +20,5 @@ const headerStyles = css`
   padding: 16px;
   background: ${colors.blue};
   color: ${colors.mint};
+  z-index: 100;
 `

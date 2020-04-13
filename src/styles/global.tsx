@@ -7,6 +7,10 @@ export function GlobalStyles() {
     <Global
       styles={css`
         ${emotionReset};
+        html,
+        body {
+          height: 100%;
+        }
         html {
           font-family: Arial, Helvetica, sans-serif;
           box-sizing: border-box;

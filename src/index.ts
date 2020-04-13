@@ -1,7 +1,8 @@
 import express from 'express'
-import socketio, { Socket } from 'socket.io'
 import path from 'path'
 import shuffle from 'shuffle-array'
+import socketio, { Socket } from 'socket.io'
+import { Card, CardName, Icon, Player } from './model/model'
 
 const PORT = process.env.PORT || 3000
 
@@ -17,16 +18,23 @@ const guiPath =
 const assetsPath =
   process.env.NODE_ENV === 'production' ? './assets' : path.join(__dirname, '../assets')
 
-app.use(express.static(guiPath))
-app.use('/assets', express.static(assetsPath))
+const publicPath =
+  process.env.NODE_ENV === 'production' ? './public' : path.join(__dirname, '../public')
 
-export type Player = {
-  name: string
-  id: string
-}
+app.use(express.static(guiPath))
+app.use('/players', express.static(guiPath))
+app.use('/game', express.static(guiPath))
+
+app.use('/assets', express.static(assetsPath))
+app.use('/public', express.static(publicPath))
+
+const allIcons: Icon[] = ['eichel', 'blatt', 'herz', 'schelle']
+const allNames: CardName[] = ['A', 'K', 'O', 'U', '10', '9']
 
 let USERS: Player[] = []
-let CARDS = Array.from({ length: 32 }).map((_, i) => i + 1)
+let CARDS: Card[] = allIcons.flatMap(icon => {
+  return allNames.map(name => ({ icon, name }))
+})
 
 io.on('connection', function (socket: Socket) {
   io.to(`${socket.id}`).emit('update users', USERS)
@@ -42,7 +50,7 @@ io.on('connection', function (socket: Socket) {
   })
 
   socket.on('remove user', (data: Player) => {
-    USERS = USERS.filter((p) => p.name !== data.name)
+    USERS = USERS.filter(p => p.name !== data.name)
     io.emit('update users', USERS)
   })
 

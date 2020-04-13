@@ -1,9 +1,9 @@
 import { css } from '@emotion/core'
 import React from 'react'
-import { Player } from '../..'
 import { NicknameForm } from '../components/nickname-form/nickname-form'
 import { Header } from '../components/header/header'
 import { colors } from '../../styles/global'
+import { Player } from '../../model'
 
 export function Home({ players }: { players: Player[] }) {
   return (
@@ -14,12 +14,14 @@ export function Home({ players }: { players: Player[] }) {
   )
 }
 
-const pageStyles = css`
+export const pageStyles = css`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   background: ${colors.white};
   flex-direction: column;
+  padding-top: 64px;
+  overflow: hidden;
 `

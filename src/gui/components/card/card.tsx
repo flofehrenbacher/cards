@@ -1,15 +1,24 @@
 import React from 'react'
 import { css } from '@emotion/core'
+import { EichelIcon } from './deck/bavarian/eichel'
+import { SchelleIcon } from './deck/bavarian/schelle'
+import { HerzIcon } from './deck/bavarian/herz'
+import { BlattIcon } from './deck/bavarian/blatt'
+import { UnreachableCaseError } from '../../../utils/unreachable-case-error'
+import { Icon } from '../../../model'
+
+type Card = import('../../../model').Card
 
 type CardProps = {
-  icon: (props: any) => JSX.Element
-  name: string
+  card: Card
 } & React.HTMLAttributes<HTMLElement>
 
-export const Card = ({ icon: Icon, name, ...props }: CardProps) => {
+export const Card = ({ card, ...props }: CardProps) => {
+  const Icon = getIconComponent(card.icon)
+
   const nameAndIcon = {
     icon: Icon,
-    name,
+    name: card.name,
   }
   return (
     <figure css={cardStyles} {...props}>
@@ -28,23 +37,35 @@ const HalfCard = ({
   name: string
 }) => {
   return (
-    <section css={halfCardStyles} {...props}>
+    <div css={iconAndNameStyles} {...props}>
       <Icon css={{ height: '100%' }} />
-      <svg viewBox="0 0 15 15" css={{ height: '100%', width: '100%' }}>
-        <text x="0" y="13">
-          {name}
-        </text>
-      </svg>
-    </section>
+      {name}
+    </div>
   )
 }
 
+function getIconComponent(icon: Icon) {
+  switch (icon) {
+    case 'eichel':
+      return EichelIcon
+    case 'blatt':
+      return BlattIcon
+    case 'herz':
+      return HerzIcon
+    case 'schelle':
+      return SchelleIcon
+    default:
+      throw new UnreachableCaseError(icon)
+  }
+}
+
 const cardStyles = css`
-  width: 200px;
-  height: 400px;
-  border: 1px solid black;
+  width: 100px;
+  height: 200px;
+  border: 2px solid black;
   border-radius: 5px;
   position: relative;
+  background: white;
   &::after {
     content: '';
     width: 100%;
@@ -55,9 +76,10 @@ const cardStyles = css`
   }
 `
 
-const halfCardStyles = css`
+const iconAndNameStyles = css`
   position: absolute;
-  height: 6%;
+  height: 10%;
   display: flex;
   align-items: baseline;
+  font-size: 24px;
 `

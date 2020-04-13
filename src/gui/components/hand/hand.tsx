@@ -1,39 +1,39 @@
 import React from 'react'
 import { css } from '@emotion/core'
 import { Card } from '../card/card'
-import { SchelleIcon } from '../card/deck/bavarian/schelle'
+
+type Card = import('../../../model').Card
 
 export function Hand() {
-  const [cards, setCards] = React.useState([])
-  const [stack, setStack] = React.useState<number[]>([])
+  const [cards, setCards] = React.useState<Card[]>([])
+  const [stack, setStack] = React.useState<Card[]>([])
 
   React.useEffect(() => {
-    socket.on('assign cards', (data: any) => {
+    socket.on('assign cards', (data: Card[]) => {
       setCards(data)
     })
 
-    socket.on('update stack', (data: number) => {
-      setStack((prev) => [...prev, data])
+    socket.on('update stack', (data: Card) => {
+      setStack(prev => [...prev, data])
     })
   }, [])
 
   return (
     <>
       <ul css={stackStyles}>
-        {stack.map((s, i) => (
-          <Card icon={SchelleIcon} name={String(s)} key={s} css={cardStackStyles(i)} />
+        {stack.map((card, i) => (
+          <Card card={card} key={`${card.icon}-${card.name}`} css={cardStackStyles(i)} />
         ))}
       </ul>
       <ul css={handStyles}>
-        {cards.map((c, i) => (
+        {cards.map((card, i) => (
           <Card
-            icon={SchelleIcon}
-            name={c}
-            key={c}
+            card={card}
+            key={`${card.icon}-${card.name}`}
             css={cardStyles(i, cards.length)}
             onClick={() => {
-              setCards((prev) => prev.filter((card) => card !== c))
-              socket.emit('play card', { card: c })
+              setCards(prev => prev.filter(c => c !== card))
+              socket.emit('play card', { card })
             }}
           />
         ))}
