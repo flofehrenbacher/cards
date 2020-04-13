@@ -41,27 +41,25 @@ export function Game({
         onDragEnd={result => {
           setIsDragActive(false)
           const { destination, source, draggableId } = result
-          console.log(result)
+          const movedCard: Card = {
+            name: draggableId.split('-')[0] as CardName,
+            icon: draggableId.split('-')[1] as Icon,
+          }
+          if (!destination) {
+            setStack(stack => [...stack, movedCard])
+            setMyCards(myCards.filter(c => !equals(movedCard, c)))
+          }
           // destination is not null AND draggable actually moved
           if (
             destination &&
             !(destination.droppableId === source.droppableId && destination.index === source.index)
           ) {
-            const movedCard: Card = {
-              name: draggableId.split('-')[0] as CardName,
-              icon: draggableId.split('-')[1] as Icon,
-            }
-            if (destination.droppableId === 'stack') {
-              setStack(stack => [...stack, movedCard])
-              setMyCards(myCards.filter(c => !equals(movedCard, c)))
-            } else {
-              const newMyCards = myCards.filter(c => !equals(movedCard, c))
-              setMyCards([
-                ...newMyCards.slice(0, destination.index),
-                movedCard,
-                ...newMyCards.slice(destination.index),
-              ])
-            }
+            const newMyCards = myCards.filter(c => !equals(movedCard, c))
+            setMyCards([
+              ...newMyCards.slice(0, destination.index),
+              movedCard,
+              ...newMyCards.slice(destination.index),
+            ])
           }
         }}
       >
@@ -76,34 +74,18 @@ export function Game({
             },
           ]}
         >
-          <>
-            {stack.map((stackCard, i) => (
-              <div key={`${stackCard.icon}-${stackCard.name}`}>
-                <Card card={stackCard} />
-              </div>
-            ))}
-            <Droppable droppableId="stack">
-              {provided => (
-                <div
-                  ref={provided.innerRef}
-                  css={[
-                    {
-                      width: 100 + 30,
-                      height: 200 + 30,
-                      border: '5px solid transparent',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    },
-                    isDragActive ? [{ border: '5px solid green' }] : [],
-                  ]}
-                  {...provided.droppableProps}
-                >
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </>
+          {stack.map((stackCard, i) => (
+            <div
+              key={`${stackCard.icon}-${stackCard.name}`}
+              css={{
+                position: 'absolute',
+                transform: `rotate(${40 * i}deg)`,
+                zIndex: i,
+              }}
+            >
+              <Card card={stackCard} />
+            </div>
+          ))}
         </div>
         <Droppable droppableId={`unique-id`} direction={'horizontal'}>
           {provided => (
@@ -124,10 +106,11 @@ export function Game({
                   index={index}
                   key={`${card.icon}-${card.name}`}
                 >
-                  {provided => (
+                  {(provided, snapshot) => (
                     <div
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
+                      style={getStyle(provided.draggableProps.style, snapshot)}
                       ref={provided.innerRef}
                     >
                       <Card card={card} />
@@ -151,3 +134,14 @@ const playersListStyles = css`
   justify-self: flex-start;
   margin-top: 32px;
 `
+
+function getStyle(style: any, snapshot: any) {
+  if (!snapshot.isDropAnimating) {
+    return style
+  }
+  return {
+    ...style,
+    // cannot be 0, but make it super tiny
+    transitionDuration: `0.00001s`,
+  }
+}
