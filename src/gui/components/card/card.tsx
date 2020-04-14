@@ -60,8 +60,8 @@ function getIconComponent(icon: Icon) {
 }
 
 const cardStyles = css`
-  width: 100px;
-  height: 200px;
+  width: 75px;
+  height: 150px;
   border: 2px solid black;
   border-radius: 5px;
   position: relative;

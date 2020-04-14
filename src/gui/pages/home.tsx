@@ -24,4 +24,6 @@ export const pageStyles = css`
   flex-direction: column;
   padding-top: 64px;
   overflow: hidden;
+  position: fixed;
+  bottom: 0;
 `

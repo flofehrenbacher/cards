@@ -70,7 +70,7 @@ io.on('connection', function (socket: Socket) {
     })
   })
 
-  socket.on('play card', ({ card }) => {
+  socket.on('play card', (card: Card) => {
     io.emit('update stack', card)
   })
 })

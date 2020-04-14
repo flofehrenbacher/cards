@@ -7,6 +7,7 @@ import { Card } from '../components/card/card'
 import { Header } from '../components/header/header'
 import { SinglePlayer } from '../components/single-player/single-player'
 import { pageStyles } from './home'
+import { colors } from '../../styles/global'
 
 type Card = import('../../model').Card
 
@@ -16,16 +17,13 @@ export function Game({
   myCards,
   setMyCards,
   stack,
-  setStack,
 }: {
   players: Player[]
   me?: Player
   myCards: Card[]
   setMyCards: React.Dispatch<React.SetStateAction<Card[]>>
   stack: Card[]
-  setStack: React.Dispatch<React.SetStateAction<Card[]>>
 }) {
-  const [isDragActive, setIsDragActive] = React.useState(false)
   return (
     <div css={pageStyles}>
       <Header />
@@ -37,16 +35,14 @@ export function Game({
           ))}
       </section>
       <DragDropContext
-        onDragStart={() => setIsDragActive(true)}
         onDragEnd={result => {
-          setIsDragActive(false)
           const { destination, source, draggableId } = result
           const movedCard: Card = {
             name: draggableId.split('-')[0] as CardName,
             icon: draggableId.split('-')[1] as Icon,
           }
           if (!destination) {
-            setStack(stack => [...stack, movedCard])
+            socket.emit('play card', movedCard)
             setMyCards(myCards.filter(c => !equals(movedCard, c)))
           }
           // destination is not null AND draggable actually moved
@@ -87,15 +83,14 @@ export function Game({
             </div>
           ))}
         </div>
-        <Droppable droppableId={`unique-id`} direction={'horizontal'}>
+        <Droppable droppableId={`hand`} direction={'horizontal'}>
           {provided => (
             <section
               css={{
                 width: '100%',
+                height: 100,
                 display: 'flex',
                 justifyContent: 'center',
-                top: 20,
-                left: -(myCards.length * 60) / 2,
               }}
               ref={provided.innerRef}
               {...provided.droppableProps}
@@ -113,7 +108,10 @@ export function Game({
                       style={getStyle(provided.draggableProps.style, snapshot)}
                       ref={provided.innerRef}
                     >
-                      <Card card={card} />
+                      <Card
+                        card={card}
+                        css={{ backgroundColor: snapshot.isDragging ? colors.mint : 'white' }}
+                      />
                     </div>
                   )}
                 </Draggable>
