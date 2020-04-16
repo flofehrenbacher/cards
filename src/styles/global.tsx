@@ -1,6 +1,6 @@
+import { css, Global } from '@emotion/core'
 import emotionReset from 'emotion-reset'
 import React from 'react'
-import { css, Global } from '@emotion/core'
 
 export function GlobalStyles() {
   return (

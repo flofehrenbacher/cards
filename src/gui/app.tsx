@@ -1,14 +1,16 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter as Router, Route, Switch, useHistory } from 'react-router-dom'
+
+import { CardType, Player } from '../model/model'
 import { GlobalStyles } from '../styles/global'
+import { AppStateProvider, appStateReducer, DispatchProvider, initialState } from './app-state'
+import { TransitionTime } from './components/nickname-form/nickname-form'
+import { Game } from './pages/game'
 import { Home } from './pages/home'
 import { Players } from './pages/players'
-import { Game } from './pages/game'
-import { Player, Card } from '../model/model'
-import { TransitionTime } from './components/nickname-form/nickname-form'
 
-export default function App() {
+export function App() {
   return (
     <>
       <GlobalStyles />
@@ -20,47 +22,44 @@ export default function App() {
 }
 
 function AppWithAccessToRoutes() {
-  const [me, setMe] = React.useState<Player | undefined>(undefined)
-  const [myCards, setMyCards] = React.useState<Card[]>([])
-  const [stack, setStack] = React.useState<Card[]>([])
-  const [players, setPlayers] = React.useState<Player[]>(() => [])
+  const [appState, dispatch] = React.useReducer(appStateReducer, initialState)
 
   const history = useHistory()
 
   React.useEffect(() => {
     socket.on('update users', (data: Player[]) => {
-      console.log({ data })
-      setPlayers(data)
+      dispatch({ type: 'update-players', payload: data })
     })
 
     socket.on('assign id', (data: Player) => {
-      setMe({
-        name: data.name,
-        id: data.id,
-      })
+      dispatch({ type: 'assign-me', payload: data })
     })
 
-    socket.on('assign cards', (data: Card[]) => {
+    socket.on('assign cards', (data: CardType[]) => {
       setTimeout(() => history.push('/game'), TransitionTime)
-      setMyCards(data)
+      dispatch({ type: 'assign-cards', payload: data })
     })
 
-    socket.on('update stack', (card: Card) => {
-      console.log(card)
-      setStack(prev => [...prev, card])
+    socket.on('update stack', (data: CardType[]) => {
+      dispatch({ type: 'update-stack', payload: data })
     })
   }, [])
+
   return (
     <Switch>
-      <Route exact path="/">
-        <Home players={players} />
-      </Route>
-      <Route path="/players">
-        <Players players={players} me={me} />
-      </Route>
-      <Route path="/game">
-        <Game players={players} me={me} myCards={myCards} setMyCards={setMyCards} stack={stack} />
-      </Route>
+      <DispatchProvider value={dispatch}>
+        <AppStateProvider value={appState}>
+          <Route exact path="/">
+            <Home />
+          </Route>
+          <Route path="/players">
+            <Players />
+          </Route>
+          <Route path="/game">
+            <Game />
+          </Route>
+        </AppStateProvider>
+      </DispatchProvider>
     </Switch>
   )
 }

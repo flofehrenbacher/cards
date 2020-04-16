@@ -3,11 +3,12 @@ import { isEmpty } from 'ramda'
 import React from 'react'
 import { useHistory } from 'react-router-dom'
 import { colors } from '../../../styles/global'
-import { Player } from '../../../model'
+import { useAppState } from '../../app-state'
 
 export const TransitionTime = 500
 
-export function NicknameForm({ players, ...props }: { players: Player[] }) {
+export function NicknameForm(props: any) {
+  const { players } = useAppState()
   const [name, setName] = React.useState('')
   const [submitted, setSubmitted] = React.useState(false)
   const input = React.useRef<HTMLInputElement>(null)

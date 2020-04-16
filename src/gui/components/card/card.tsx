@@ -7,7 +7,7 @@ import { EichelIcon } from './deck/bavarian/eichel'
 import { HerzIcon } from './deck/bavarian/herz'
 import { SchelleIcon } from './deck/bavarian/schelle'
 
-type Card = import('../../../model').Card
+type Card = import('../../../model').CardType
 
 type CardProps = {
   card: Card

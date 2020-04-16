@@ -1,15 +1,15 @@
 import { css } from '@emotion/core'
 import React from 'react'
-import { NicknameForm } from '../components/nickname-form/nickname-form'
-import { Header } from '../components/header/header'
-import { colors } from '../../styles/global'
-import { Player } from '../../model'
 
-export function Home({ players }: { players: Player[] }) {
+import { colors } from '../../styles/global'
+import { Header } from '../components/header/header'
+import { NicknameForm } from '../components/nickname-form/nickname-form'
+
+export function Home() {
   return (
     <div css={pageStyles}>
       <Header />
-      <NicknameForm players={players} />
+      <NicknameForm />
     </div>
   )
 }

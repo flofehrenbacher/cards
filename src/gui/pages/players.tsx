@@ -1,14 +1,16 @@
 import { css } from '@emotion/core'
 import React from 'react'
-import { Header } from '../components/header/header'
-import { colors } from '../../styles/global'
-import { TransitionTime } from '../components/nickname-form/nickname-form'
 import { useHistory } from 'react-router-dom'
-import { SinglePlayer } from '../components/single-player/single-player'
-import { Player } from '../../model'
-import { pageStyles } from './home'
 
-export function Players({ players, me }: { players: Player[]; me?: Player }) {
+import { colors } from '../../styles/global'
+import { Header } from '../components/header/header'
+import { TransitionTime } from '../components/nickname-form/nickname-form'
+import { SinglePlayer } from '../components/single-player/single-player'
+import { pageStyles } from './home'
+import { useAppState } from '../app-state'
+
+export function Players() {
+  const { players, me } = useAppState()
   const history = useHistory()
   const [clickedButton, setClickedButton] = React.useState(false)
 

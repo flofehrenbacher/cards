@@ -6,7 +6,7 @@ export type Player = {
 export type Icon = 'eichel' | 'blatt' | 'herz' | 'schelle'
 export type CardName = 'A' | 'K' | 'O' | 'U' | '10' | '9'
 
-export type Card = {
+export type CardType = {
   icon: Icon
   name: CardName
 }

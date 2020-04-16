@@ -2,28 +2,20 @@ import { css } from '@emotion/core'
 import { equals } from 'ramda'
 import React from 'react'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
-import { CardName, Icon, Player } from '../../model'
-import { Card } from '../components/card/card'
+import { CardName, Icon } from '../../model'
+import { colors } from '../../styles/global'
+import { useAppState, useDispatch } from '../app-state'
 import { Header } from '../components/header/header'
 import { SinglePlayer } from '../components/single-player/single-player'
 import { pageStyles } from './home'
-import { colors } from '../../styles/global'
+import { Card } from '../components/card'
 
-type Card = import('../../model').Card
+type Card = import('../../model').CardType
 
-export function Game({
-  players,
-  me,
-  myCards,
-  setMyCards,
-  stack,
-}: {
-  players: Player[]
-  me?: Player
-  myCards: Card[]
-  setMyCards: React.Dispatch<React.SetStateAction<Card[]>>
-  stack: Card[]
-}) {
+export function Game() {
+  const { players, me, myCards, stack } = useAppState()
+  const dispatch = useDispatch()
+
   return (
     <div css={pageStyles}>
       <Header />
@@ -42,8 +34,8 @@ export function Game({
             icon: draggableId.split('-')[1] as Icon,
           }
           if (!destination) {
-            socket.emit('play card', movedCard)
-            setMyCards(myCards.filter(c => !equals(movedCard, c)))
+            socket.emit('update stack', [...stack, movedCard])
+            dispatch({ type: 'assign-cards', payload: myCards.filter(c => !equals(movedCard, c)) })
           }
           // destination is not null AND draggable actually moved
           if (
@@ -51,11 +43,14 @@ export function Game({
             !(destination.droppableId === source.droppableId && destination.index === source.index)
           ) {
             const newMyCards = myCards.filter(c => !equals(movedCard, c))
-            setMyCards([
-              ...newMyCards.slice(0, destination.index),
-              movedCard,
-              ...newMyCards.slice(destination.index),
-            ])
+            dispatch({
+              type: 'assign-cards',
+              payload: [
+                ...newMyCards.slice(0, destination.index),
+                movedCard,
+                ...newMyCards.slice(destination.index),
+              ],
+            })
           }
         }}
       >

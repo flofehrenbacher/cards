@@ -2,7 +2,7 @@ import express from 'express'
 import path from 'path'
 import shuffle from 'shuffle-array'
 import socketio, { Socket } from 'socket.io'
-import { Card, CardName, Icon, Player } from './model/model'
+import { CardType, CardName, Icon, Player } from './model/model'
 
 const PORT = process.env.PORT || 3000
 
@@ -32,7 +32,7 @@ const allIcons: Icon[] = ['eichel', 'blatt', 'herz', 'schelle']
 const allNames: CardName[] = ['A', 'K', 'O', 'U', '10', '9']
 
 let USERS: Player[] = []
-let CARDS: Card[] = allIcons.flatMap(icon => {
+let CARDS: CardType[] = allIcons.flatMap(icon => {
   return allNames.map(name => ({ icon, name }))
 })
 
@@ -70,8 +70,8 @@ io.on('connection', function (socket: Socket) {
     })
   })
 
-  socket.on('play card', (card: Card) => {
-    io.emit('update stack', card)
+  socket.on('update stack', (cards: CardType[]) => {
+    io.emit('update stack', cards)
   })
 })
 
