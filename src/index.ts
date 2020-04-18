@@ -2,7 +2,9 @@ import express from 'express'
 import path from 'path'
 import shuffle from 'shuffle-array'
 import socketio, { Socket } from 'socket.io'
-import { CardType, CardName, Icon, Player } from './model/model'
+import { CardName, CardType, Icon, Player } from './model/model'
+import { serverListen } from './socket-io/client-to-server'
+import { serverEmitTo, serverEmitToAll } from './socket-io/server-to-client'
 
 const PORT = process.env.PORT || 3000
 
@@ -37,41 +39,43 @@ let CARDS: CardType[] = allIcons.flatMap(icon => {
 })
 
 io.on('connection', function (socket: Socket) {
-  io.to(`${socket.id}`).emit('update users', USERS)
+  serverEmitTo(io, socket.id, { event: 'update-players', payload: { players: USERS } })
 
-  socket.on('add user', (data: Player) => {
-    const newUser = {
-      name: data.name,
-      id: socket.id,
-    }
-
-    USERS = [...USERS, newUser]
-    io.emit('update users', USERS)
-    io.to(`${socket.id}`).emit('assign id', newUser)
+  serverListen(socket, {
+    event: 'add-player',
+    // TODO types?????????
+    listener: ({ name }: { name: string }) => {
+      const newUser: Player = {
+        name: name,
+        id: socket.id,
+      }
+      USERS = [...USERS, newUser]
+      serverEmitToAll(io, { event: 'update-players', payload: { players: USERS } })
+      serverEmitTo(io, socket.id, { event: 'assign-me', payload: { me: newUser } })
+    },
   })
 
-  socket.on('remove user', (data: Player) => {
-    USERS = USERS.filter(p => p.name !== data.name)
-    io.emit('update users', USERS)
+  serverListen(socket, {
+    event: 'give-cards',
+    listener: ({ playerName }: { playerName?: string }) => {
+      const mixedCards = shuffle(CARDS)
+      USERS.forEach((u, userIndex) => {
+        serverEmitTo(io, u.id, {
+          event: 'give-cards',
+          payload: {
+            cards: mixedCards.filter((_, cardIndex) => cardIndex % USERS.length === userIndex),
+            playerName,
+          },
+        })
+      })
+    },
   })
 
-  socket.on('reset users', () => {
-    USERS = []
-    io.emit('update users', USERS)
-  })
-
-  socket.on('give cards', () => {
-    const mixedCards = shuffle(CARDS)
-    USERS.forEach((u, userIndex) => {
-      io.to(`${u.id}`).emit(
-        'assign cards',
-        mixedCards.filter((_, cardIndex) => cardIndex % USERS.length === userIndex),
-      )
-    })
-  })
-
-  socket.on('update stack', (cards: CardType[]) => {
-    io.emit('update stack', cards)
+  serverListen(socket, {
+    event: 'update-stack',
+    listener: ({ cards, playerName }: { cards: CardType[]; playerName: string }) => {
+      serverEmitToAll(io, { event: 'update-stack', payload: { cards, playerName } })
+    },
   })
 })
 

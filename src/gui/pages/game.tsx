@@ -9,6 +9,7 @@ import { Header } from '../components/header/header'
 import { SinglePlayer } from '../components/single-player/single-player'
 import { pageStyles } from './home'
 import { Card } from '../components/card'
+import { clientEmit } from '../../socket-io/client-to-server'
 
 type Card = import('../../model').CardType
 
@@ -34,8 +35,14 @@ export function Game() {
             icon: draggableId.split('-')[1] as Icon,
           }
           if (!destination) {
-            socket.emit('update stack', [...stack, movedCard])
-            dispatch({ type: 'assign-cards', payload: myCards.filter(c => !equals(movedCard, c)) })
+            clientEmit({
+              event: 'update-stack',
+              payload: { cards: [...stack, movedCard], playerName: me?.name },
+            })
+            dispatch({
+              type: 'update-my-cards',
+              payload: myCards.filter(c => !equals(movedCard, c)),
+            })
           }
           // destination is not null AND draggable actually moved
           if (
@@ -44,7 +51,7 @@ export function Game() {
           ) {
             const newMyCards = myCards.filter(c => !equals(movedCard, c))
             dispatch({
-              type: 'assign-cards',
+              type: 'update-my-cards',
               payload: [
                 ...newMyCards.slice(0, destination.index),
                 movedCard,

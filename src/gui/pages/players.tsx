@@ -8,6 +8,7 @@ import { TransitionTime } from '../components/nickname-form/nickname-form'
 import { SinglePlayer } from '../components/single-player/single-player'
 import { pageStyles } from './home'
 import { useAppState } from '../app-state'
+import { clientEmit } from '../../socket-io/client-to-server'
 
 export function Players() {
   const { players, me } = useAppState()
@@ -17,8 +18,7 @@ export function Players() {
   function onButtonClick(event: any): void {
     event.preventDefault()
     setClickedButton(true)
-    socket.emit('give cards')
-    setTimeout(() => history.push('/game'), TransitionTime)
+    clientEmit({ event: 'give-cards', payload: { playerName: me?.name } })
   }
 
   return (

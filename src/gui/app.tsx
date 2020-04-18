@@ -9,6 +9,7 @@ import { TransitionTime } from './components/nickname-form/nickname-form'
 import { Game } from './pages/game'
 import { Home } from './pages/home'
 import { Players } from './pages/players'
+import { clientListen } from '../socket-io/server-to-client'
 
 export function App() {
   return (
@@ -27,21 +28,33 @@ function AppWithAccessToRoutes() {
   const history = useHistory()
 
   React.useEffect(() => {
-    socket.on('update users', (data: Player[]) => {
-      dispatch({ type: 'update-players', payload: data })
+    clientListen({
+      event: 'update-players',
+      listener: ({ players }: { players: Player[] }) => {
+        dispatch({ type: 'update-players', payload: players })
+      },
     })
 
-    socket.on('assign id', (data: Player) => {
-      dispatch({ type: 'assign-me', payload: data })
+    clientListen({
+      event: 'assign-me',
+      listener: ({ me }: { me: Player }) => {
+        dispatch({ type: 'assign-me', payload: me })
+      },
     })
 
-    socket.on('assign cards', (data: CardType[]) => {
-      setTimeout(() => history.push('/game'), TransitionTime)
-      dispatch({ type: 'assign-cards', payload: data })
+    clientListen({
+      event: 'give-cards',
+      listener: ({ cards }: { cards: CardType[] }) => {
+        setTimeout(() => history.push('/game'), TransitionTime)
+        dispatch({ type: 'update-my-cards', payload: cards })
+      },
     })
 
-    socket.on('update stack', (data: CardType[]) => {
-      dispatch({ type: 'update-stack', payload: data })
+    clientListen({
+      event: 'update-stack',
+      listener: ({ cards, playerName }: { cards: CardType[]; playerName: string }) => {
+        dispatch({ type: 'update-stack', payload: cards })
+      },
     })
   }, [])
 

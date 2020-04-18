@@ -10,10 +10,14 @@ type AppState = {
   players: Player[]
   lastAction: undefined | string
 }
-type AppStateAction = AssignMeAction | AssignCardsAction | UpdateUsersAction | UpdateStackAction
+export type AppStateAction =
+  | AssignMeAction
+  | AssignCardsAction
+  | UpdateUsersAction
+  | UpdateStackAction
 
 type AssignMeAction = { type: 'assign-me'; payload: Player }
-type AssignCardsAction = { type: 'assign-cards'; payload: CardType[] }
+type AssignCardsAction = { type: 'update-my-cards'; payload: CardType[] }
 type UpdateUsersAction = { type: 'update-players'; payload: Player[] }
 type UpdateStackAction = { type: 'update-stack'; payload: CardType[] }
 
@@ -21,7 +25,7 @@ export function appStateReducer(prevState: AppState, action: AppStateAction): Ap
   switch (action.type) {
     case 'assign-me':
       return { ...prevState, me: action.payload }
-    case 'assign-cards':
+    case 'update-my-cards':
       return { ...prevState, myCards: action.payload }
     case 'update-players':
       return { ...prevState, players: action.payload }

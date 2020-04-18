@@ -4,6 +4,7 @@ import React from 'react'
 import { useHistory } from 'react-router-dom'
 import { colors } from '../../../styles/global'
 import { useAppState } from '../../app-state'
+import { clientEmit } from '../../../socket-io/client-to-server'
 
 export const TransitionTime = 500
 
@@ -25,7 +26,7 @@ export function NicknameForm(props: any) {
       onSubmit={event => {
         event.preventDefault()
         if (!isEmpty(name) && !players.some(p => name === p.name)) {
-          socket.emit('add user', { name })
+          clientEmit({ event: 'add-player', payload: { name } })
           setSubmitted(true)
           setName('')
           setTimeout(() => history.push('/players'), TransitionTime)

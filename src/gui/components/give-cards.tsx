@@ -1,13 +1,16 @@
 import React from 'react'
 import { css } from '@emotion/core'
+import { clientEmit } from '../../socket-io/client-to-server'
+import { useAppState } from '../app-state'
 
 export function GiveCards(props: any) {
+  const { me } = useAppState()
   return (
     <button
       css={buttonStyles}
-      onClick={(e) => {
+      onClick={e => {
         e.preventDefault()
-        socket.emit('give cards')
+        clientEmit({ event: 'give-cards', payload: { playerName: me?.name } })
       }}
       {...props}
     >
