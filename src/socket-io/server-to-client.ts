@@ -1,37 +1,61 @@
 import { Server } from 'socket.io'
 import { CardType, Player } from '../model'
+import * as H from 'history'
+import { AppStateAction } from '../gui/app-state'
+import { TransitionTime } from '../gui/components/nickname-form/nickname-form'
+import { UnreachableCaseError } from '../utils/unreachable-case-error'
 
 export function serverEmitToAll(io: Server, action: ServerToClientAction) {
-  io.emit(action.event, action.payload)
+  io.emit('public-event', action)
 }
 
 export function serverEmitTo(io: Server, recipientId: string, action: ServerToClientAction) {
-  io.to(recipientId).emit(action.event, action.payload)
+  io.to(recipientId).emit('public-event', action)
 }
 
-export function clientListen<T extends ServerToClientAction>(
-  // TODO types?????????
-  { event, listener }: { event: T['event']; listener: (payload: T['payload']) => void },
+export function clientListen(
+  history: H.History<H.LocationState>,
+  dispatch: React.Dispatch<AppStateAction>,
 ) {
   // socket is implicit on client
-  socket.on(event, listener)
+  socket.on('public-event', (action: ServerToClientAction) => {
+    switch (action.type) {
+      case 'update-players': {
+        dispatch({ type: 'update-players', payload: action.payload.players })
+        return
+      }
+      case 'assign-me': {
+        dispatch({ type: 'assign-me', payload: action.payload.me })
+        return
+      }
+      case 'give-cards': {
+        setTimeout(() => history.push('/game'), TransitionTime)
+        dispatch({ type: 'give-cards', payload: action.payload })
+        return
+      }
+      case 'update-stack': {
+        dispatch({ type: 'update-stack', payload: action.payload })
+        return
+      }
+      default:
+        throw new UnreachableCaseError(action)
+    }
+  })
 }
 
 type ServerToClientAction =
   | UpdateCardsAction
   | AssignMeAction
-  | JoinGameAction
   | UpdatePlayersAction
   | UpdateStackAction
 
 type UpdateCardsAction = {
-  event: 'give-cards'
+  type: 'give-cards'
   payload: { cards: CardType[]; playerName?: string }
 }
-type AssignMeAction = { event: 'assign-me'; payload: { me: Player } }
-type JoinGameAction = { event: 'join-game'; payload: { playerName?: string } }
-type UpdatePlayersAction = { event: 'update-players'; payload: { players: Player[] } }
+type AssignMeAction = { type: 'assign-me'; payload: { me: Player } }
+type UpdatePlayersAction = { type: 'update-players'; payload: { players: Player[] } }
 type UpdateStackAction = {
-  event: 'update-stack'
+  type: 'update-stack'
   payload: { cards: CardType[]; playerName?: string }
 }

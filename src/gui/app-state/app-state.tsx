@@ -15,22 +15,55 @@ export type AppStateAction =
   | AssignCardsAction
   | UpdateUsersAction
   | UpdateStackAction
+  | GiveCardsAction
 
-type AssignMeAction = { type: 'assign-me'; payload: Player }
-type AssignCardsAction = { type: 'update-my-cards'; payload: CardType[] }
+type AssignMeAction = {
+  type: 'assign-me'
+  payload: {
+    name: string
+    id: string
+  }
+}
+type AssignCardsAction = {
+  type: 'update-my-cards'
+  payload: CardType[]
+}
 type UpdateUsersAction = { type: 'update-players'; payload: Player[] }
-type UpdateStackAction = { type: 'update-stack'; payload: CardType[] }
+type UpdateStackAction = {
+  type: 'update-stack'
+  payload: { cards: CardType[]; playerName?: string }
+}
+type GiveCardsAction = {
+  type: 'give-cards'
+  payload: { cards: CardType[]; playerName?: string }
+}
 
 export function appStateReducer(prevState: AppState, action: AppStateAction): AppState {
   switch (action.type) {
     case 'assign-me':
-      return { ...prevState, me: action.payload }
+      return {
+        ...prevState,
+        me: action.payload,
+        lastAction: `Servus ${action.payload?.name ?? 'Unbekannter Spieler'}!`,
+      }
+    case 'give-cards':
+      return {
+        ...prevState,
+        myCards: action.payload.cards,
+        lastAction: `${action.payload.playerName ?? 'Unbekannter Spieler'} hat Karten gegeben`,
+      }
     case 'update-my-cards':
       return { ...prevState, myCards: action.payload }
     case 'update-players':
       return { ...prevState, players: action.payload }
     case 'update-stack':
-      return { ...prevState, stack: action.payload }
+      const { cards, playerName } = action.payload
+      const playedCard = `${cards[cards.length - 1].name} in ${cards[cards.length - 1].icon}`
+      return {
+        ...prevState,
+        stack: cards,
+        lastAction: `${playerName ?? 'Unbekannter Spieler'} hat ${playedCard} gelegt`,
+      }
     default: {
       throw new UnreachableCaseError(action)
     }

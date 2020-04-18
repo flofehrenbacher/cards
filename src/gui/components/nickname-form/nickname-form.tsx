@@ -26,7 +26,7 @@ export function NicknameForm(props: any) {
       onSubmit={event => {
         event.preventDefault()
         if (!isEmpty(name) && !players.some(p => name === p.name)) {
-          clientEmit({ event: 'add-player', payload: { name } })
+          clientEmit({ type: 'add-player', payload: { name } })
           setSubmitted(true)
           setName('')
           setTimeout(() => history.push('/players'), TransitionTime)

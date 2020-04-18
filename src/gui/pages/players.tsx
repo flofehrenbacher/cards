@@ -1,29 +1,24 @@
 import { css } from '@emotion/core'
 import React from 'react'
-import { useHistory } from 'react-router-dom'
-
+import { clientEmit } from '../../socket-io/client-to-server'
 import { colors } from '../../styles/global'
-import { Header } from '../components/header/header'
+import { useAppState } from '../app-state'
 import { TransitionTime } from '../components/nickname-form/nickname-form'
 import { SinglePlayer } from '../components/single-player/single-player'
-import { pageStyles } from './home'
-import { useAppState } from '../app-state'
-import { clientEmit } from '../../socket-io/client-to-server'
+import { Layout } from '../layout'
 
 export function Players() {
   const { players, me } = useAppState()
-  const history = useHistory()
   const [clickedButton, setClickedButton] = React.useState(false)
 
   function onButtonClick(event: any): void {
     event.preventDefault()
     setClickedButton(true)
-    clientEmit({ event: 'give-cards', payload: { playerName: me?.name } })
+    clientEmit({ type: 'give-cards', payload: { playerName: me?.name } })
   }
 
   return (
-    <div css={pageStyles}>
-      <Header />
+    <Layout>
       <section css={playersListStyles}>
         {players
           .filter(p => p.name !== me?.name)
@@ -41,7 +36,7 @@ export function Players() {
           <p>{me.name}</p>
         </section>
       )}
-    </div>
+    </Layout>
   )
 }
 

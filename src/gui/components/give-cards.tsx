@@ -10,7 +10,7 @@ export function GiveCards(props: any) {
       css={buttonStyles}
       onClick={e => {
         e.preventDefault()
-        clientEmit({ event: 'give-cards', payload: { playerName: me?.name } })
+        clientEmit({ type: 'give-cards', payload: { playerName: me?.name } })
       }}
       {...props}
     >

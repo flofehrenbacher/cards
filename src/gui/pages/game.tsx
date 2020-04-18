@@ -3,13 +3,12 @@ import { equals } from 'ramda'
 import React from 'react'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import { CardName, Icon } from '../../model'
+import { clientEmit } from '../../socket-io/client-to-server'
 import { colors } from '../../styles/global'
 import { useAppState, useDispatch } from '../app-state'
-import { Header } from '../components/header/header'
-import { SinglePlayer } from '../components/single-player/single-player'
-import { pageStyles } from './home'
 import { Card } from '../components/card'
-import { clientEmit } from '../../socket-io/client-to-server'
+import { SinglePlayer } from '../components/single-player/single-player'
+import { Layout } from '../layout'
 
 type Card = import('../../model').CardType
 
@@ -18,8 +17,7 @@ export function Game() {
   const dispatch = useDispatch()
 
   return (
-    <div css={pageStyles}>
-      <Header />
+    <Layout>
       <section css={playersListStyles}>
         {players
           .filter(p => p.name !== me?.name)
@@ -36,7 +34,7 @@ export function Game() {
           }
           if (!destination) {
             clientEmit({
-              event: 'update-stack',
+              type: 'update-stack',
               payload: { cards: [...stack, movedCard], playerName: me?.name },
             })
             dispatch({
@@ -123,7 +121,7 @@ export function Game() {
           )}
         </Droppable>
       </DragDropContext>
-    </div>
+    </Layout>
   )
 }
 
