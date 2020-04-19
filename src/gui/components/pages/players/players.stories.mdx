@@ -1,0 +1,17 @@
+import { Meta, Story, Preview } from '@storybook/addon-docs/blocks'
+import { Players } from './players'
+import { AppStateProvider, AppState } from '../../../app-state'
+
+<Meta title="Seiten" component={Players} />
+
+# Spieler Lobby
+
+<Preview>
+  <Story name="Spieler Lobby">
+    <AppStateProvider
+      value={{ players: [{ name: 'Mustermann', id: '1234' }], me: { name: 'Rudi', id: '2345' } }}
+    >
+      <Players />
+    </AppStateProvider>
+  </Story>
+</Preview>

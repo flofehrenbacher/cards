@@ -1,5 +1,5 @@
 import React from 'react'
-import { Header } from './components/header/header'
+import { Header } from './components/atoms/header/header'
 import { useAppState } from './app-state'
 import { css } from '@emotion/core'
 import { colors } from '../styles/global'

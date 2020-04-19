@@ -24,12 +24,14 @@ export function serverListen(io: Server) {
     socket.on('public-event', (action: ClientToServerAction) => {
       switch (action.type) {
         case 'give-cards': {
-          return giveCards(action.payload.playerName ?? 'unknown player', io)
+          return giveCards(action.payload.playerName, io)
         }
         case 'add-player': {
           const player = {
             name: action.payload.name,
             id: socket.id,
+            order: USERS.length,
+            tricks: [],
           }
           return addPlayer(player, io)
         }
@@ -37,6 +39,12 @@ export function serverListen(io: Server) {
           return serverEmitToAll(io, {
             type: 'update-stack',
             payload: { cards: action.payload.cards, playerName: action.payload.playerName },
+          })
+        }
+        case 'take-trick': {
+          return serverEmitToAll(io, {
+            type: 'took-trick',
+            payload: action.payload,
           })
         }
         default:
@@ -65,11 +73,12 @@ function giveCards(playerName: string, io: Server) {
   })
 }
 
-type ClientToServerAction = GiveCardsAction | AddPlayerAction | UpdateStackAction
+type ClientToServerAction = GiveCardsAction | AddPlayerAction | UpdateStackAction | TakeTrickAction
 
-type GiveCardsAction = { type: 'give-cards'; payload: { playerName?: string } }
+type GiveCardsAction = { type: 'give-cards'; payload: { playerName: string } }
 type AddPlayerAction = { type: 'add-player'; payload: { name: string } }
 type UpdateStackAction = {
   type: 'update-stack'
-  payload: { cards: CardType[]; playerName?: string }
+  payload: { cards: CardType[]; playerName: string }
 }
+type TakeTrickAction = { type: 'take-trick'; payload: { cards: CardType[]; player: Player } }

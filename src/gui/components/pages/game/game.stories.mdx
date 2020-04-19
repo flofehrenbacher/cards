@@ -1,0 +1,51 @@
+import { Meta, Story, Preview } from '@storybook/addon-docs/blocks'
+import { Game } from './game'
+import { AppStateProvider, AppState, DispatchProvider } from '../../../app-state'
+
+<Meta title="Seiten" component={Game} />
+
+# Spiel
+
+<Preview>
+  <Story name="Spiel">
+    <DispatchProvider value={() => {}}>
+      <AppStateProvider
+        value={{
+          players: [
+            { name: 'Mustermann', id: '1234', order: 1 },
+            { name: 'Rudi', id: '2345', order: 2 },
+          ],
+          me: { name: 'Rudi', id: '2345', order: 2 },
+          stack: [{ icon: 'eichel', name: 'K' }],
+          myCards: [
+            { icon: 'blatt', name: 'K' },
+            { icon: 'herz', name: 'K' },
+          ],
+        }}
+      >
+        <Game />
+      </AppStateProvider>
+    </DispatchProvider>
+  </Story>
+  <Story name="Spiel mit mehreren Spielern">
+    <DispatchProvider value={() => {}}>
+      <AppStateProvider
+        value={{
+          players: [
+            { name: 'Spieler 1', id: '1234', order: 1 },
+            { name: 'Spieler 2', id: '2345', order: 2 },
+            { name: 'Spieler 3', id: '2234', order: 3 },
+          ],
+          me: { name: 'Spieler 2', id: '2345', order: 2 },
+          stack: [{ icon: 'eichel', name: 'K' }],
+          myCards: [
+            { icon: 'blatt', name: 'K' },
+            { icon: 'herz', name: 'K' },
+          ],
+        }}
+      >
+        <Game />
+      </AppStateProvider>
+    </DispatchProvider>
+  </Story>
+</Preview>

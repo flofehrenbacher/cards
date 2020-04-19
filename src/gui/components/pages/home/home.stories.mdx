@@ -1,0 +1,15 @@
+import { Meta, Story, Preview } from '@storybook/addon-docs/blocks'
+import { Home } from './home'
+import { AppStateProvider, AppState } from '../../../app-state'
+
+<Meta title="Seiten" component={Home} />
+
+# Home
+
+<Preview>
+  <Story name="Home">
+    <AppStateProvider value={{ players: [{ name: 'Mustermann', id: '1234' }] }}>
+      <Home />
+    </AppStateProvider>
+  </Story>
+</Preview>

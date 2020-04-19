@@ -1,6 +1,6 @@
 import { css } from '@emotion/core'
 import React from 'react'
-import { colors } from '../../../styles/global'
+import { colors } from '../../../../styles/global'
 
 export function Header(props: any) {
   return (

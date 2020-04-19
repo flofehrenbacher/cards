@@ -1,13 +1,13 @@
 import { css } from '@emotion/core'
 import React from 'react'
-import { Icon } from '../../../model'
-import { UnreachableCaseError } from '../../../utils/unreachable-case-error'
+import { Icon } from '../../../../model'
+import { UnreachableCaseError } from '../../../../utils/unreachable-case-error'
 import { BlattIcon } from './deck/bavarian/blatt'
 import { EichelIcon } from './deck/bavarian/eichel'
 import { HerzIcon } from './deck/bavarian/herz'
 import { SchelleIcon } from './deck/bavarian/schelle'
 
-type Card = import('../../../model').CardType
+type Card = import('../../../../model').CardType
 
 type CardProps = {
   card: Card

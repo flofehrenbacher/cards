@@ -25,8 +25,8 @@ app.use(express.static(guiPath))
 app.use('/players', express.static(guiPath))
 app.use('/game', express.static(guiPath))
 
-app.use('/assets', express.static(assetsPath))
-app.use('/public', express.static(publicPath))
+app.use(express.static(assetsPath))
+app.use(express.static(publicPath))
 
 server.listen(3000, function () {
   console.log(`listening on http://localhost:${PORT}`)

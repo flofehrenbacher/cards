@@ -2,7 +2,6 @@ import { Server } from 'socket.io'
 import { CardType, Player } from '../model'
 import * as H from 'history'
 import { AppStateAction } from '../gui/app-state'
-import { TransitionTime } from '../gui/components/nickname-form/nickname-form'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
 
 export function serverEmitToAll(io: Server, action: ServerToClientAction) {
@@ -29,12 +28,16 @@ export function clientListen(
         return
       }
       case 'give-cards': {
-        setTimeout(() => history.push('/game'), TransitionTime)
+        history.push('/game')
         dispatch({ type: 'give-cards', payload: action.payload })
         return
       }
       case 'update-stack': {
         dispatch({ type: 'update-stack', payload: action.payload })
+        return
+      }
+      case 'took-trick': {
+        dispatch({ type: 'took-trick', payload: action.payload })
         return
       }
       default:
@@ -48,14 +51,19 @@ type ServerToClientAction =
   | AssignMeAction
   | UpdatePlayersAction
   | UpdateStackAction
+  | TookTrickAction
 
 type UpdateCardsAction = {
   type: 'give-cards'
-  payload: { cards: CardType[]; playerName?: string }
+  payload: { cards: CardType[]; playerName: string }
 }
 type AssignMeAction = { type: 'assign-me'; payload: { me: Player } }
 type UpdatePlayersAction = { type: 'update-players'; payload: { players: Player[] } }
 type UpdateStackAction = {
   type: 'update-stack'
-  payload: { cards: CardType[]; playerName?: string }
+  payload: { cards: CardType[]; playerName: string }
+}
+type TookTrickAction = {
+  type: 'took-trick'
+  payload: { cards: CardType[]; player: Player }
 }

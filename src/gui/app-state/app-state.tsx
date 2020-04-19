@@ -2,13 +2,15 @@ import React from 'react'
 
 import { CardType, Player } from '../../model'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
+import { Players } from '../components/pages/players/players'
 
-type AppState = {
-  me: undefined | Player
+export type AppState = {
+  me: Player
   myCards: CardType[]
   stack: CardType[]
   players: Player[]
   lastAction: undefined | string
+  lastTrick: undefined | CardType[]
 }
 export type AppStateAction =
   | AssignMeAction
@@ -16,13 +18,11 @@ export type AppStateAction =
   | UpdateUsersAction
   | UpdateStackAction
   | GiveCardsAction
+  | TookTrickAction
 
 type AssignMeAction = {
   type: 'assign-me'
-  payload: {
-    name: string
-    id: string
-  }
+  payload: Player
 }
 type AssignCardsAction = {
   type: 'update-my-cards'
@@ -36,6 +36,10 @@ type UpdateStackAction = {
 type GiveCardsAction = {
   type: 'give-cards'
   payload: { cards: CardType[]; playerName?: string }
+}
+type TookTrickAction = {
+  type: 'took-trick'
+  payload: { cards: CardType[]; player: Player }
 }
 
 export function appStateReducer(prevState: AppState, action: AppStateAction): AppState {
@@ -56,14 +60,27 @@ export function appStateReducer(prevState: AppState, action: AppStateAction): Ap
       return { ...prevState, myCards: action.payload }
     case 'update-players':
       return { ...prevState, players: action.payload }
-    case 'update-stack':
+    case 'update-stack': {
       const { cards, playerName } = action.payload
       const playedCard = `${cards[cards.length - 1].name} in ${cards[cards.length - 1].icon}`
       return {
         ...prevState,
         stack: cards,
-        lastAction: `${playerName ?? 'Unbekannter Spieler'} hat ${playedCard} gelegt`,
+        lastAction: `${playerName} hat ${playedCard} gelegt`,
       }
+    }
+    case 'took-trick': {
+      const { me } = prevState
+      const { cards, player } = action.payload
+      const updatedMe = me.name === player.name ? { ...me, tricks: [...player.tricks, cards] } : me
+      return {
+        ...prevState,
+        stack: [],
+        lastTrick: cards,
+        me: updatedMe,
+        lastAction: `${player.name} hat den Stich genommen`,
+      }
+    }
     default: {
       throw new UnreachableCaseError(action)
     }
@@ -71,11 +88,12 @@ export function appStateReducer(prevState: AppState, action: AppStateAction): Ap
 }
 
 export const initialState = {
-  me: undefined,
+  me: { name: 'unbekannter Spieler', id: '1234', order: 0, tricks: [] },
   myCards: [],
   stack: [],
   players: [],
   lastAction: undefined,
+  lastTrick: undefined,
 }
 
 const DispatchContext = React.createContext<React.Dispatch<AppStateAction> | undefined>(undefined)

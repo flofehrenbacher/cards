@@ -1,30 +1,43 @@
-import { css } from '@emotion/core'
 import { equals } from 'ramda'
 import React from 'react'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
-import { CardName, Icon } from '../../model'
-import { clientEmit } from '../../socket-io/client-to-server'
-import { colors } from '../../styles/global'
-import { useAppState, useDispatch } from '../app-state'
-import { Card } from '../components/card'
-import { SinglePlayer } from '../components/single-player/single-player'
-import { Layout } from '../layout'
+import { CardName, Icon } from '../../../../model'
+import { clientEmit } from '../../../../socket-io/client-to-server'
+import { colors } from '../../../../styles/global'
+import { useAppState, useDispatch } from '../../../app-state'
+import { Layout } from '../../../layout'
+import { CardsButton, HandButton } from '../../atoms/buttons'
+import { Card } from '../../atoms/card'
+import { PlayersInOrder } from '../players/players'
 
-type Card = import('../../model').CardType
+type Card = import('../../../../model').CardType
 
-export function Game() {
-  const { players, me, myCards, stack } = useAppState()
+export function Game({ onClickLastTrick: watchLastTrick }: { onClickLastTrick: () => void }) {
+  const { me, myCards, stack } = useAppState()
   const dispatch = useDispatch()
 
   return (
     <Layout>
-      <section css={playersListStyles}>
-        {players
-          .filter(p => p.name !== me?.name)
-          .map(player => (
-            <SinglePlayer name={player.name} key={player.name} />
-          ))}
+      <section
+        css={{
+          position: 'absolute',
+          height: '100%',
+          right: 0,
+          top: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          padding: 20,
+        }}
+      >
+        <CardsButton title="Letzten Stich ansehen" onClick={watchLastTrick} />
+        <HandButton
+          onClick={() => clientEmit({ type: 'take-trick', payload: { player: me, cards: stack } })}
+          css={{ marginTop: 10 }}
+          title="Stich nehmen"
+        />
       </section>
+      <PlayersInOrder />
       <DragDropContext
         onDragEnd={result => {
           const { destination, source, draggableId } = result
@@ -35,7 +48,7 @@ export function Game() {
           if (!destination) {
             clientEmit({
               type: 'update-stack',
-              payload: { cards: [...stack, movedCard], playerName: me?.name },
+              payload: { cards: [...stack, movedCard], playerName: me.name },
             })
             dispatch({
               type: 'update-my-cards',
@@ -124,14 +137,6 @@ export function Game() {
     </Layout>
   )
 }
-
-const playersListStyles = css`
-  display: flex;
-  justify-content: space-around;
-  width: 100%;
-  justify-self: flex-start;
-  margin-top: 32px;
-`
 
 function getStyle(style: any, snapshot: any) {
   if (!snapshot.isDropAnimating) {

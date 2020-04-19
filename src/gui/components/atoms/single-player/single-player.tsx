@@ -1,7 +1,7 @@
 import React from 'react'
 import { css } from '@emotion/core'
-import { PlayerIcon } from '../player-icon'
-import { colors } from '../../../styles/global'
+import { PlayerIcon } from '../../player-icon'
+import { colors } from '../../../../styles/global'
 
 export function SinglePlayer({ name, ...props }: { name: string }) {
   return (

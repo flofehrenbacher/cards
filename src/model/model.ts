@@ -1,6 +1,8 @@
 export type Player = {
+  order: number
   name: string
   id: string
+  tricks: CardType[][]
 }
 
 export type Icon = 'eichel' | 'blatt' | 'herz' | 'schelle'

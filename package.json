@@ -12,7 +12,7 @@
     "build": "npm run clean && npm run tsc && npm test && webpack --mode=production",
     "start": "START_NODEMON=true webpack --mode=development --watch --progress",
     "analyze-client-bundle": "ANALYZE_CLIENT_BUNDLE=true webpack -p",
-    "storybook": "start-storybook -p 6006",
+    "storybook": "start-storybook -s ./public -p 6006",
     "build-storybook": "build-storybook"
   },
   "husky": {
