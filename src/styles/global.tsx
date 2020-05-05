@@ -27,9 +27,9 @@ export function GlobalStyles() {
 }
 
 export const colors = {
-  black: '#eaf2ef',
-  white: '#1e152a',
+  black: '#1a181b',
+  white: '#f4faff',
   blue: '#1e152a',
   mint: '#eaf2ef',
-  green: '#1a181b',
+  green: '#14281d',
 }

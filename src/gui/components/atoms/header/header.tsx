@@ -12,10 +12,10 @@ export function Header(props: any) {
 
 const headerStyles = css`
   position: fixed;
-  top: 5;
+  top: 0;
   text-align: center;
   font-size: 32px;
-  letter-spacing: 4px;
+  letter-spacing: 8px;
   width: 100%;
   padding: 16px;
   background: ${colors.blue};
